@@ -1,0 +1,76 @@
+{
+  "entities": {
+    "User": {
+      "title": "User Profile",
+      "description": "User account information and roles",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "role": { "type": "string", "enum": ["student", "teacher"] },
+        "classCode": { "type": "string" },
+        "groupId": { "type": "string" }
+      },
+      "required": ["uid", "name", "email", "role"]
+    },
+    "Class": {
+      "title": "Classroom",
+      "description": "A class created by a teacher",
+      "type": "object",
+      "properties": {
+        "classCode": { "type": "string" },
+        "className": { "type": "string" },
+        "teacherId": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["classCode", "className", "teacherId"]
+    },
+    "Group": {
+      "title": "Study Group",
+      "description": "A group of students within a class",
+      "type": "object",
+      "properties": {
+        "groupCode": { "type": "string" },
+        "groupName": { "type": "string" },
+        "classId": { "type": "string" },
+        "members": { "type": "array" }
+      },
+      "required": ["groupCode", "groupName", "classId"]
+    },
+    "LKPDAnswer": {
+      "title": "LKPD Answer",
+      "description": "Answers submitted by a student or group for an LKPD",
+      "type": "object",
+      "properties": {
+        "classId": { "type": "string" },
+        "targetId": { "type": "string" },
+        "targetType": { "type": "string", "enum": ["user", "group"] },
+        "step1": { "type": "object" },
+        "step2": { "type": "object" },
+        "step3": { "type": "object" },
+        "step4": { "type": "object" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["classId", "targetId", "targetType"]
+    }
+  },
+  "firestore": {
+    "users/{userId}": {
+      "schema": "User",
+      "description": "Global user profiles"
+    },
+    "classes/{classId}": {
+      "schema": "Class",
+      "description": "Classes managed by teachers"
+    },
+    "groups/{groupId}": {
+      "schema": "Group",
+      "description": "Student groups"
+    },
+    "answers/{answerId}": {
+      "schema": "LKPDAnswer",
+      "description": "LKPD answers linked to a class and user/group"
+    }
+  }
+}

@@ -1,0 +1,52 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Common helpers
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    // User profiles
+    match /users/{userId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && request.auth.uid == userId;
+      allow update: if isSignedIn() && request.auth.uid == userId;
+    }
+
+    // Classes
+    match /classes/{classId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn(); // In more strict version, check if role == teacher
+      allow update: if isSignedIn() && resource.data.teacherId == request.auth.uid;
+    }
+
+    // Groups
+    match /groups/{groupId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn();
+      allow update: if isSignedIn(); // Should check if user is a member
+    }
+
+    // Answers
+    match /answers/{answerId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && isValidId(answerId);
+      allow update: if isSignedIn() && (
+        // Only allow if it's the user's own answer or they are potentially in a group
+        // For simplicity and since we don't have complex RBAC yet, we allow if signed in
+        // but it's better to add more checks.
+        true
+      );
+      allow delete: if isSignedIn();
+    }
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "rules": {
+    ".read": "auth != null",
+    ".write": "auth != null",
+    "users": {
+      "$uid": {
+        ".read": "auth != null",
+        ".write": "auth != null && auth.uid == $uid"
+      }
+    },
+    "classes": {
+      ".indexOn": ["classCode", "teacherId"],
+      ".read": "auth != null",
+      ".write": "auth != null"
+    },
+    "groups": {
+      ".indexOn": ["groupCode"],
+      ".read": "auth != null",
+      ".write": "auth != null"
+    },
+    "answers": {
+      ".indexOn": ["classId"],
+      ".read": "auth != null",
+      ".write": "auth != null"
+    }
+  }
+}
